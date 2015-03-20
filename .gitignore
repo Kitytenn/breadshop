@@ -1,4 +1,7 @@
-js/main.js
-js/main.min.js
-css/
-node_modules/
+frontend/dist/build/
+frontend/dist/index.html
+frontend/dist/src/
+frontend/node_modules/
+backend/.bundle
+backend/log/*.log
+backend/tmp

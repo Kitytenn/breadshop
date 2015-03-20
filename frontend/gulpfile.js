@@ -1,66 +1,67 @@
 var gulp = require('gulp');
-var sass = require('gulp-sass');
 var uglify = require('gulp-uglify');
-var rename = require('gulp-rename');
-var notify = require('gulp-notify');
-var minifycss = require('gulp-minify-css');
-var concat = require('gulp-concat');
-var plumber = require('gulp-plumber');
-var browserSync = require('browser-sync');
-var reload = browserSync.reload;
+var htmlreplace = require('gulp-html-replace');
+var source = require('vinyl-source-stream');
+var browserify = require('browserify');
+var watchify = require('watchify');
+var reactify = require('reactify');
+var streamify = require('gulp-streamify');
 
-/* Setup scss path */
-var paths = {
-    scss: './sass/*.scss'
+var path = {
+  HTML: 'src/index.html',
+  MINIFIED_OUT: 'build.min.js',
+  OUT: 'build.js',
+  DEST: 'dist',
+  DEST_BUILD: 'dist/build',
+  DEST_SRC: 'dist/src',
+  ENTRY_POINT: './src/app.js'
 };
 
-/* Scripts task */
-gulp.task('scripts', function() {
-  return gulp.src([
-    'js/app.js'
-    ])
-    .pipe(concat('main.js'))
-    .pipe(gulp.dest('js'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(uglify())
-    .pipe(gulp.dest('js'));
+gulp.task('copy', function(){
+  gulp.src(path.HTML)
+    .pipe(gulp.dest(path.DEST));
 });
 
-/* Sass task */
-gulp.task('sass', function () {  
-    gulp.src('scss/style.scss')
-    .pipe(plumber())
-    .pipe(sass({
-        includePaths: ['scss']
+gulp.task('watch', function() {
+  gulp.watch(path.HTML, ['copy']);
+
+  var watcher  = watchify(browserify({
+    entries: [path.ENTRY_POINT],
+    transform: [reactify],
+    debug: true,
+    cache: {}, packageCache: {}, fullPaths: true
+  }));
+
+  return watcher.on('update', function () {
+    watcher.bundle()
+      .pipe(source(path.OUT))
+      .pipe(gulp.dest(path.DEST_SRC))
+      console.log('Updated');
+  })
+    .bundle()
+    .pipe(source(path.OUT))
+    .pipe(gulp.dest(path.DEST_SRC));
+});
+
+gulp.task('build', function(){
+  browserify({
+    entries: [path.ENTRY_POINT],
+    transform: [reactify],
+  })
+    .bundle()
+    .pipe(source(path.MINIFIED_OUT))
+    .pipe(streamify(uglify(path.MINIFIED_OUT)))
+    .pipe(gulp.dest(path.DEST_BUILD));
+});
+
+gulp.task('replaceHTML', function(){
+  gulp.src(path.HTML)
+    .pipe(htmlreplace({
+      'js': 'build/' + path.MINIFIED_OUT
     }))
-    .pipe(gulp.dest('css'))
-    .pipe(rename({suffix: '.min'}))
-    .pipe(minifycss())
-    .pipe(gulp.dest('css'))
-    /* Reload the browser CSS after every change */
-    .pipe(reload({stream:true}));
+    .pipe(gulp.dest(path.DEST));
 });
 
-/* Reload task */
-gulp.task('bs-reload', function () {
-    browserSync.reload();
-});
+gulp.task('production', ['replaceHTML', 'build']);
 
-/* Prepare Browser-sync for localhost */
-gulp.task('browser-sync', function() {
-    browserSync.init(['css/*.css', 'js/*.js'], {
-        server: {
-            baseDir: './'
-        }
-    });
-});
-
-/* Watch scss, js and html files, doing different things with each. */
-gulp.task('default', ['sass', 'browser-sync'], function () {
-    /* Watch scss, run the sass task on change. */
-    gulp.watch(['scss/*.scss', 'scss/**/*.scss'], ['sass'])
-    /* Watch app.js file, run the scripts task on change. */
-    gulp.watch(['js/app.js'], ['scripts'])
-    /* Watch .html files, run the bs-reload task on change. */
-    gulp.watch(['*.html'], ['bs-reload']);
-});
+gulp.task('default', ['watch']);
