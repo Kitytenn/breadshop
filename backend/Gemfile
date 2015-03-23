@@ -6,8 +6,8 @@ gem 'rails', '4.2.1'
 
 gem 'rails-api'
 
-
-
+gem 'rspec', group: :test
+gem 'byebug', group: [:development, :test]
 
 
 # To use ActiveModel has_secure_password
