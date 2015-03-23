@@ -6,15 +6,17 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 var reactify = require('reactify');
 var streamify = require('gulp-streamify');
+var sass = require('gulp-sass');
 
 var path = {
   HTML: 'src/index.html',
+  SCSS: 'src/style.scss',
   MINIFIED_OUT: 'build.min.js',
   OUT: 'build.js',
   DEST: 'dist',
   DEST_BUILD: 'dist/build',
-  DEST_SRC: 'dist/src',
-  ENTRY_POINT: './src/app.js'
+  DEST_SRC: 'dist/js',
+  ENTRY_POINT: './src/js/app.js'
 };
 
 gulp.task('copy', function(){
@@ -22,8 +24,15 @@ gulp.task('copy', function(){
     .pipe(gulp.dest(path.DEST));
 });
 
+gulp.task('sass', function () {
+  gulp.src(path.SCSS)
+    .pipe(sass())
+    .pipe(gulp.dest(path.DEST));
+});
+
 gulp.task('watch', function() {
   gulp.watch(path.HTML, ['copy']);
+  gulp.watch(path.SCSS, ['sass']);
 
   var watcher  = watchify(browserify({
     entries: [path.ENTRY_POINT],
@@ -64,4 +73,4 @@ gulp.task('replaceHTML', function(){
 
 gulp.task('production', ['replaceHTML', 'build']);
 
-gulp.task('default', ['watch']);
+gulp.task('default', ['copy', 'watch']);

@@ -58,19 +58,19 @@ table {
     }
 }
 
-#rustic {
+.rustic {
     background: url("/images/boulle_bg.jpg") no-repeat center center fixed;
 }
 
-#bagels {
+.bagels {
     background: url("/images/bagels_bg.jpg") no-repeat center center fixed;
 }
 
-#baguette {
+.baguette {
     background: url("/images/baguette_bg.jpg") no-repeat center center fixed;
 }
 
-#pain {
+.pain {
     background: url("/images/pain_bg.jpg") no-repeat center center fixed;
 }
 
@@ -78,10 +78,20 @@ table {
     background: url("/images/low_contrast_linen.png");
     margin: 20px auto;
     padding: 10px;
-    width: 220px;
+    width: 180px;
     display: block;
     color: white;
     text-decoration: none;
     border: 1px solid dark-grey;
     font-size: 2em;
+}
+
+.ordering {
+    background: white;
+    margin: 20px auto;
+    padding: 10px;
+    width: 600px;
+    display: block;
+    color: black;
+    border: 1px solid gray;
 }

@@ -1,5 +1,6 @@
 Backend::Application.routes.draw do
-  root 'orders#new'
+  resources :orders
+  resources :products
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
