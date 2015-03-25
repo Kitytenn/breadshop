@@ -1,0 +1,2 @@
+# BreadShop
+BreadShop is an attempt at a non-trivial [Clean Architecture](http://blog.8thlight.com/uncle-bob/2012/08/13/the-clean-architecture.html) example application. The backend is a Rails API with no asset pipeline or view rendering. It simply provides API endpoints for persisting the frontends' data. Currently there is a web frontend but the plan is to make native mobile frontends as well. The web frontend is a React Flux application.
