@@ -1,5 +1,14 @@
-require 'time_range'
+require 'entity'
+require 'entities/time_range'
 
-class Step
-  attr_accessor :name, :time_range, :target_temp, :measure
+class Step < Entity
+  attr_accessor :name, :time_ranges, :target_temp, :measure
+
+  def average_time
+    @time_ranges.map(&:average_time).reduce(:+)
+  end
+
+  def max_time
+    @time_ranges.map(&:max).reduce(:+)
+  end
 end

@@ -2,17 +2,7 @@ require 'spec_helper'
 require 'entities/ingredient'
 require 'entities/formula'
 require 'entities/step'
-require 'time_range'
-
-def create_step(values)
-  step = Step.new
-  step.name = values[:name]
-  time_range = TimeRange.new
-  time_range.min = values[:min]
-  time_range.max = values[:max]
-  step.time_range = time_range
-  step
-end
+require 'entities/time_range'
 
 describe Formula do
   describe 'quantity calculations' do
@@ -69,17 +59,10 @@ describe Formula do
   end
   
   context '#average_time' do
-    before(:each) do
-      subject.steps = [ create_step({ name: 'autolyze', min: 20, max: 30 }),
-                        create_step({ name: 'mix', min: 12*60, max: 14*60 }),
-                        create_step({ name: 'fold', min: 60, max: 90 }),
-                        create_step({ name: 'divide', min: 3, max: 10 }),
-                        create_step({ name: 'shape', min: 5, max: 10 }),
-                        create_step({ name: 'proof', min: 60, max: 90 }),
-                        create_step({ name: 'bake', min: 40, max: 60 }) ]
-    end
+    include_context "steps"
+    before(:each) { subject.steps = @steps }
     it 'calculates the average preparation time' do
-      expect(subject.average_time).to eq(1018)
+      expect(subject.average_time).to eq(1049*60)
     end
   end
 end
