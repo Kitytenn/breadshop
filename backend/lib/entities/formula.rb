@@ -1,7 +1,7 @@
 require 'entity'
 
 class Formula < Entity
-  attr_accessor :name, :total_flour_quantity, :steps, :ingredients
+  attr_accessor :name, :total_flour_quantity, :steps, :ingredients, :equipment
 
   def mix_quantity(ingredient)
     @total_flour_quantity * ingredient.percentage - pre_ferment_quantity(ingredient)
@@ -23,11 +23,14 @@ class Formula < Entity
     @steps.find {|s| s.name.to_s == name.to_s }
   end
 
-  def next_step(name: step)
-    prev_step = find_step(name: step)
-    @steps[@steps.index(prev_step)+1]
+  def next_step(name:)
+    @steps[@steps.index(find_step(name: name))+1]
   end
   
+  def prev_step(name:)
+    @steps[@steps.index(find_step(name: name))-1]
+  end
+
   private
 
   def pre_ferment_quantity(ingredient)

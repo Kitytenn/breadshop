@@ -1,9 +1,9 @@
-frontend/dist/build/
-frontend/dist/js/
-frontend/dist/style.css
-frontend/dist/index.html
-frontend/dist/src/
-frontend/node_modules/
+web/dist/build/
+web/dist/js/
+web/dist/style.css
+web/dist/index.html
+web/dist/src/
+web/node_modules/
 backend/.bundle
 backend/log/*.log
 backend/tmp

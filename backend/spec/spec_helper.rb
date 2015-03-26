@@ -1,4 +1,5 @@
 require 'byebug'
+require 'entities/step'
 
 shared_context "steps", a: :b do
   def time_range(min:, max: min, active: true)
