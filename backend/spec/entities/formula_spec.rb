@@ -58,11 +58,11 @@ describe Formula do
     end
   end
   
-  context '#average_time' do
+  context '#time_stats' do
     include_context "steps"
     before(:each) { subject.steps = @steps }
     it 'calculates the average preparation time' do
-      expect(subject.average_time).to eq(1049*60)
+      expect(subject.time_stats).to eq(1049*60)
     end
   end
 end

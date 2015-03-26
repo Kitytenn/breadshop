@@ -21,19 +21,32 @@ class Batch < Entity
   end
   
   def finish_by
-    @start_time + @formula.average_time
+    @start_time + @formula.time_stats
   end
     
-  def next_step_at
+  def step_at(time: Time.now, stat_type: :average)
     if @history.last
-      current_step_started = @history.last[@current_step_name]
-      current_step_started + @formula.find_step(name: @current_step_name).average_time
+      delta = (time - last_step_time)
+      step_name = last_step_name
+      while delta > 0
+        step = @formula.find_step(name: step_name)
+        delta = delta - step.time_stats(type: stat_type)
+        # TODO: return :finished if steps are over
+        return step.name unless next_step = @formula.next_step(name: step_name)
+        step_name = next_step.name
+      end
+      step.name
+    else
+      @formula.steps.first.name
     end
   end
 
   def using_equipment
     return [] if !@formula.equipment
-    @formula.equipment.select {|e| e.needed_for_step_name == @current_step_name }
+    @formula.equipment.select {|e| e.step_name == @current_step_name }
+  end
+
+  def equipment_used_at(time = Time.now)
   end
 
   private
@@ -47,5 +60,9 @@ class Batch < Entity
 
   def last_step_name
     @history.last.keys.first.to_sym
+  end
+
+  def last_step_time
+    @history.last.values.first
   end
 end

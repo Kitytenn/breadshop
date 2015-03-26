@@ -11,8 +11,8 @@ class Formula < Entity
     @total_flour_quantity * ingredient.percentage
   end
 
-  def average_time
-    @steps.map {|s| s.average_time }.reduce(:+)
+  def time_stats(type: :average)
+    @steps.map{ |s| s.send(:time_stats, type: type) }.reduce(:+)
   end
 
   def find_ingredient(name:)
