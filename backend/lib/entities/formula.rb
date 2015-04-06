@@ -1,7 +1,11 @@
 require 'entity'
 
 class Formula < Entity
-  attr_accessor :name, :total_flour_quantity, :steps, :ingredients, :equipment
+  attr_accessor :name, :total_flour_quantity, :steps, :ingredients
+
+  def total_quantity
+    @ingredients.map { |i| mix_quantity(i) }.reduce(:+)
+  end
 
   def mix_quantity(ingredient)
     @total_flour_quantity * ingredient.percentage - pre_ferment_quantity(ingredient)

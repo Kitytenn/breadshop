@@ -6,12 +6,19 @@ require 'entities/time_range'
 
 describe Formula do
   describe 'quantity calculations' do
-    let(:flour) { Ingredient.new(name: 'flour', percentage: 1.00) }
-    let(:water) { Ingredient.new(name: 'water', percentage: 0.75) }
-    let(:salt) { Ingredient.new(name: 'salt', percentage: 0.022) }
-    let(:yeast) { Ingredient.new(name: 'yeast', percentage: 0.004) }
-    describe '#mix_quantity' do
+    include_context "formula"
 
+    describe '#total_quantity' do
+      before(:each) do
+        subject.total_flour_quantity = 1000
+        subject.ingredients = [flour, water, salt, yeast]
+      end
+      it 'calculates the total quantity of all ingredients' do
+        expect(subject.total_quantity).to eq(1776)
+      end
+    end
+
+    describe '#mix_quantity' do
       context 'straight doughs' do
         before(:each) do
           subject.total_flour_quantity = 1000

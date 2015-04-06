@@ -24,16 +24,16 @@ class Batch < Entity
     @start_time + @formula.time_stats
   end
     
-  def step_at(time: Time.now, stat_type: :average)
+  def step_at(time:, stat_type: :average)
     if @history.last
       delta = (time - last_step_time)
-      step_name = last_step_name
+      step = @formula.find_step(name: last_step_name)
       while delta > 0
-        step = @formula.find_step(name: step_name)
         delta = delta - step.time_stats(type: stat_type)
-        # TODO: return :finished if steps are over
-        return step.name unless next_step = @formula.next_step(name: step_name)
-        step_name = next_step.name
+        break if delta < 0
+        unless step = @formula.next_step(name: step.name)
+          return :finished
+        end
       end
       step.name
     else
@@ -41,12 +41,13 @@ class Batch < Entity
     end
   end
 
-  def using_equipment
-    return [] if !@formula.equipment
-    @formula.equipment.select {|e| e.step_name == @current_step_name }
+  def using_equipment(step_name: @current_step_name)
+    @formula.find_step(name: step_name).equipment
   end
 
-  def equipment_used_at(time = Time.now)
+  def equipment_used_at(time:, stat_type: :average)
+    step_name = step_at(time: time, stat_type: stat_type)
+    using_equipment(step_name: step_name)
   end
 
   private

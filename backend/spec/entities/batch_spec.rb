@@ -5,10 +5,12 @@ require 'entities/formula'
 
 describe Batch do
   include_context "steps"
+  include_context "formula"
   let(:equipment) { [Equipment.new(name: :oven, step_name: :bake)] }
-  let(:formula) { Formula.new(steps: @steps, equipment: equipment) }
+  let(:formula) { Formula.new(steps: @steps, total_flour_quantity: 1000, ingredients: [flour, water, salt, yeast]) }
   let(:time) { Time.new(2015, 3, 3, 19, 40) }
   let(:subject) { described_class.new(formula: formula, start_time: time) }
+  before(:each) { allow(Time).to receive(:now) { time } }
 
   context '#update_step' do
     it 'updates the history and sets the current step' do
@@ -25,11 +27,18 @@ describe Batch do
     end
   end
 
-  # context '#equipment_used_at' do
-  #   it 'shows what equipment will be in use' do
-  #     expect(subject.equipment_used_at(Time.new(2015, 3, 4, 12, 50))).to eq equipment
-  #   end
-  # end
+  context '#equipment_used_at' do
+    context 'baking in oven' do
+      it 'shows what equipment will be in use' do
+        expect(subject.equipment_used_at(time: Time.new(2015, 3, 4, 13, 1))).to eq equipment
+      end
+    end
+    context 'not using any equipment' do
+      it 'shows no equipment' do
+        expect(subject.equipment_used_at(time: Time.new(2015, 3, 3, 20, 11))).to eq []
+      end
+    end
+  end
 
   context '#finish_by' do
     it 'shows average finish time' do
@@ -38,14 +47,13 @@ describe Batch do
   end
 
   context '#step_at' do
-    before(:each) { allow(Time).to receive(:now) { time } }
     context 'currently on step' do
-      it 'gets the projected step at given time' do
+      it 'gets the current step' do
         expect(subject.step_at(time: Time.new(2015, 3, 3, 19, 50))).to eq(:autolyze)
       end
     end
     context 'next step' do
-      it 'gets the projected step at given time' do
+      it 'gets the next step' do
         expect(subject.step_at(time: Time.new(2015, 3, 3, 20, 11))).to eq(:mix)
       end
     end
@@ -55,13 +63,13 @@ describe Batch do
       end
     end
     context 'last step' do
-      it 'gets the projected step at given time' do
-        expect(subject.step_at(time: Time.new(2015, 3, 4, 13, 1))).to eq(:bake)
+      it 'gets the last step' do
+        expect(subject.step_at(time: Time.new(2015, 3, 4, 12, 20))).to eq(:bake)
       end
     end
     context 'after last step' do
-      it 'gets the projected step at given time' do
-        expect(subject.step_at(time: Time.new(2015, 3, 4, 13, 10))).to eq(:bake)
+      it 'returns :finished' do
+        expect(subject.step_at(time: Time.new(2015, 3, 4, 13, 10))).to eq(:finished)
       end
     end
   end

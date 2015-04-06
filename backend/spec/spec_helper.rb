@@ -1,37 +1,37 @@
 require 'byebug'
+require 'active_support/core_ext/numeric/time'
+require 'entities/ingredient'
 require 'entities/step'
 
 shared_context "steps", a: :b do
-  def time_range(min:, max: min, active: true)
-    TimeRange.new(min: min*60, max: max*60, active: active)
-  end
-
-  def create_step(name:, time_ranges:)
-    Step.new(name: name, time_ranges: time_ranges)
-  end
-
   before do
-    @steps = [ create_step(name: :autolyze, time_ranges:
-                                              [time_range(min: 5),
-                                               time_range(min: 20, max: 30, active: false)]),
-               create_step(name: :mix, time_ranges:
-                                         [time_range(min: 5)]),
-               create_step(name: :fold, time_ranges:
-                                      [time_range(min: 30, active: false),
-                                       time_range(min: 3),
-                                       time_range(min: 30, active: false),
-                                       time_range(min: 3),
-                                       time_range(min: 30, active: false),
-                                       time_range(min: 3),
-                                       time_range(min: 12*60, max: 14*60, active: false)]),
-               create_step(name: :divide, time_ranges:
-                                      [time_range(min: 5)]),
-               create_step(name: :shape, time_ranges:
-                                      [time_range(min: 5)]),
-               create_step(name: :proof, time_ranges:
-                                      [time_range(min: 60, max: 90)]),
-               create_step(name: :bake, time_ranges:
-                                          [time_range(min: 40, max: 60)]) ]
+    @steps = [ Step.new(name: :autolyze, time_ranges:
+                            [TimeRange.new(min: 5.minutes),
+                             TimeRange.new(min: 20.minutes, max: 30.minutes, active: false)]),
+               Step.new(name: :mix, time_ranges:
+                                         [TimeRange.new(min: 5.minutes)]),
+               Step.new(name: :fold, time_ranges:
+                                      [TimeRange.new(min: 30.minutes, active: false),
+                                       TimeRange.new(min: 3.minutes),
+                                       TimeRange.new(min: 30.minutes, active: false),
+                                       TimeRange.new(min: 3.minutes),
+                                       TimeRange.new(min: 30.minutes, active: false),
+                                       TimeRange.new(min: 3.minutes),
+                                       TimeRange.new(min: 12.hours, max: 14.hours, active: false)]),
+               Step.new(name: :divide, time_ranges:
+                                      [TimeRange.new(min: 5.minutes)]),
+               Step.new(name: :shape, time_ranges:
+                                      [TimeRange.new(min: 5.minutes)]),
+               Step.new(name: :proof, time_ranges:
+                                      [TimeRange.new(min: 60.minutes, max: 90.minutes)]),
+               Step.new(name: :bake, time_ranges:
+                                          [TimeRange.new(min: 40.minutes, max: 60.minutes)]) ]
   end
 end
 
+shared_context "formula", a: :b do
+  let(:flour) { Ingredient.new(name: 'flour', percentage: 1.00) }
+  let(:water) { Ingredient.new(name: 'water', percentage: 0.75) }
+  let(:salt) { Ingredient.new(name: 'salt', percentage: 0.022) }
+  let(:yeast) { Ingredient.new(name: 'yeast', percentage: 0.004) }
+end
